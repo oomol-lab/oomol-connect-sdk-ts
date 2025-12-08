@@ -197,4 +197,66 @@ export class TasksClient {
     const completedTask = await this.waitForCompletion(task.id, pollingOptions);
     return { taskId: task.id, task: completedTask };
   }
+
+  /**
+   * 运行任务并直接获取结果 (最便捷方法)
+   * 创建任务、等待完成、获取日志，一步到位
+   */
+  async run(
+    request: CreateTaskRequest,
+    pollingOptions?: PollingOptions
+  ): Promise<{
+    taskId: string;
+    task: Task;
+    logs: GetTaskLogsResponse["logs"];
+    result?: any;
+  }> {
+    // 创建并等待任务完成
+    const { taskId, task } = await this.createAndWait(request, pollingOptions);
+
+    // 获取任务日志
+    const { logs } = await this.getLogs(taskId);
+
+    // 尝试从日志中提取结果
+    const resultLog = logs.find(
+      (log) => log.type === "BlockFinished" && log.event?.result
+    );
+    const result = resultLog?.event?.result;
+
+    return { taskId, task, logs, result };
+  }
+
+  /**
+   * 运行带文件上传的任务并直接获取结果
+   */
+  async runWithFiles(
+    manifest: string,
+    inputValues: TaskInputValues,
+    files: File | File[],
+    pollingOptions?: PollingOptions
+  ): Promise<{
+    taskId: string;
+    task: Task;
+    logs: GetTaskLogsResponse["logs"];
+    result?: any;
+  }> {
+    // 创建并等待任务完成
+    const { taskId, task } = await this.createWithFilesAndWait(
+      manifest,
+      inputValues,
+      files,
+      pollingOptions
+    );
+
+    // 获取任务日志
+    const { logs } = await this.getLogs(taskId);
+
+    // 尝试从日志中提取结果
+    const resultLog = logs.find(
+      (log) => log.type === "BlockFinished" && log.event?.result
+    );
+    const result = resultLog?.event?.result;
+
+    return { taskId, task, logs, result };
+  }
 }

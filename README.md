@@ -2,17 +2,6 @@
 
 一个用于与 OOMOL Connect API 交互的 TypeScript SDK,提供完整的类型支持和现代化的 API 设计。
 
-## 特性
-
-- ✨ **零依赖** - 使用原生 `fetch` API,轻量且高效
-- 🔒 **完整类型支持** - 基于 OpenAPI schema 生成的 TypeScript 类型
-- 🎯 **模块化设计** - 清晰的功能分离,易于使用和维护
-- ⚡ **轮询机制** - 内置任务轮询,支持指数退避和固定间隔策略
-- 📦 **文件上传** - 支持单文件和多文件上传
-- 🛠️ **灵活的输入格式** - 支持三种不同的 `inputValues` 格式
-- 🔄 **便捷方法** - 提供 `createAndWait`、`installAndWait` 等便捷方法
-- 🚫 **完善的错误处理** - 自定义错误类层次结构
-
 ## 安装
 
 ```bash
@@ -20,6 +9,30 @@ npm install oomol-connect-sdk
 ```
 
 ## 快速开始
+
+### 最简单的用法 - 直接运行任务获取结果
+
+```typescript
+import { OomolConnectClient } from "oomol-connect-sdk";
+
+const client = new OomolConnectClient({
+  baseUrl: "https://your-api-server.com/api",
+  defaultHeaders: {
+    "Authorization": "api-your-token-here",
+  },
+});
+
+// 一行代码运行任务并获取结果
+const { result, taskId, logs } = await client.tasks.run({
+  manifest: "audio-lab::text-to-audio",
+  inputValues: {
+    text: "你好,我是一只小柯基",
+  },
+});
+
+console.log("任务结果:", result);
+// 输出: { audio_address: "/oomol-driver/oomol-storage/1765206844.mp3" }
+```
 
 ### 基础使用
 
@@ -43,39 +56,20 @@ const { task } = await client.tasks.create({
 console.log(`任务已创建: ${task.id}`);
 ```
 
-### 使用 API Token 鉴权
-
-SDK 支持多种鉴权方式，根据 API 服务器的要求选择合适的方式：
+### 鉴权配置
 
 ```typescript
 import { OomolConnectClient } from "oomol-connect-sdk";
 
-// 方式1: 使用 apiToken 参数 (自动添加 Bearer 前缀)
 const client = new OomolConnectClient({
-  baseUrl: "https://api.example.com/api",
-  apiToken: "your-api-token-here",  // 会自动转换为 "Authorization: Bearer <token>"
-});
-
-// 方式2: 使用原始 API Key (不带 Bearer 前缀)
-// 某些 API 可能需要直接传递 API key,不带 Bearer 前缀
-const client = new OomolConnectClient({
-  baseUrl: "https://api.example.com/api",
+  baseUrl: "https://your-api-server.com/api",
   defaultHeaders: {
-    "Authorization": "api-c656404dfec3af418c6641d165c036b4b7579826bcfa4e0cf2bf6fc7d2481a97",
-  },
-});
-
-// 方式3: 使用自定义请求头
-const client = new OomolConnectClient({
-  baseUrl: "https://api.example.com/api",
-  defaultHeaders: {
-    "X-API-Key": "your-api-key-here",
-    "X-Custom-Auth": "custom-value",
+    "Authorization": "api-your-token-here",  // 直接传入 API key
   },
 });
 ```
 
-> **注意**: 不同的 API 服务器可能使用不同的鉴权方式。如果使用 `apiToken` 参数遇到 401/403 错误，请尝试直接在 `defaultHeaders` 中设置 `Authorization` 头（不带 Bearer 前缀）。
+> **注意**: 不同的 OOMOL API 服务器可能使用不同的鉴权方式，请根据实际情况调整 Authorization 头的格式。
 
 ## API 模块
 
@@ -142,6 +136,46 @@ const { task } = await client.packages.getInstallTask(taskId);
 ```
 
 ## 高级功能
+
+### 便捷方法 - 一步运行任务
+
+SDK 提供了最简单的 `run()` 方法，自动完成创建任务、等待完成、获取结果的全流程：
+
+```typescript
+// 方法1: 运行任务并获取结果（推荐）
+const { result, taskId, task, logs } = await client.tasks.run({
+  manifest: "audio-lab::text-to-audio",
+  inputValues: {
+    text: "你好,我是一只小柯基",
+  },
+});
+
+console.log("任务ID:", taskId);
+console.log("任务结果:", result);
+// result: { audio_address: "/oomol-driver/oomol-storage/1765206844.mp3" }
+
+// 方法2: 带文件上传的任务
+const file = new File(["content"], "test.txt");
+const { result, taskId } = await client.tasks.runWithFiles(
+  "pkg-1::block-1",
+  { input1: "value1" },
+  file
+);
+
+// 方法3: 带进度回调
+const { result } = await client.tasks.run(
+  {
+    manifest: "audio-lab::text-to-audio",
+    inputValues: { text: "你好" },
+  },
+  {
+    intervalMs: 2000,
+    onProgress: (task) => {
+      console.log(`进度: ${task.status}`);
+    },
+  }
+);
+```
 
 ### 任务轮询
 
@@ -397,19 +431,19 @@ interface PollingOptions {
 
 查看 [examples](./examples/) 目录获取更多示例:
 
+- [simple-run.ts](./examples/simple-run.ts) - 最简单的运行示例（推荐）
 - [basic.ts](./examples/basic.ts) - 基础使用示例
-- [authentication.ts](./examples/authentication.ts) - API Token 鉴权示例
 - [polling.ts](./examples/polling.ts) - 轮询等待示例
 - [with-files.ts](./examples/with-files.ts) - 文件上传示例
 - [packages.ts](./examples/packages.ts) - 包管理示例
-- [test-text-to-audio.ts](./examples/test-text-to-audio.ts) - Audio Lab 文字转语音示例
+- [test-text-to-audio.ts](./examples/test-text-to-audio.ts) - 完整的测试示例
 
 ### 实际使用案例: Audio Lab 文字转语音
 
 以下是一个完整的实际使用案例，演示如何使用 SDK 调用 audio-lab 的文字转语音功能：
 
 ```typescript
-import { OomolConnectClient } from "../src/index.js";
+import { OomolConnectClient } from "oomol-connect-sdk";
 
 const client = new OomolConnectClient({
   baseUrl: "https://your-api-server.com/api",
@@ -418,41 +452,24 @@ const client = new OomolConnectClient({
   },
 });
 
-// 1. 查找 audio-lab::text-to-audio block
-const { blocks } = await client.blocks.list();
-const audioBlock = blocks.find(b =>
-  b.package === "audio-lab" && b.name === "text-to-audio"
+// 使用 run 方法 - 一步完成所有操作
+const { result, taskId, task } = await client.tasks.run(
+  {
+    manifest: "audio-lab::text-to-audio",
+    inputValues: {
+      text: "你好,我是一只小柯基",
+    },
+  },
+  {
+    intervalMs: 2000,
+    onProgress: (task) => {
+      console.log(`进度: ${task.status}`);
+    },
+  }
 );
 
-// 2. 创建文字转语音任务
-const { task } = await client.tasks.create({
-  manifest: "audio-lab::text-to-audio",
-  inputValues: {
-    text: "你好,我是一只小柯基",
-  },
-});
-
-// 3. 等待任务完成并实时显示进度
-const completedTask = await client.tasks.waitForCompletion(task.id, {
-  intervalMs: 2000,
-  timeoutMs: 180000,  // 3分钟超时
-  onProgress: (task) => {
-    const elapsed = ((task.updated_at - task.created_at) / 1000).toFixed(1);
-    console.log(`[进度] 状态: ${task.status} (已用时 ${elapsed}s)`);
-  },
-  onLog: (log) => {
-    console.log(`[日志] ${log.type} - ${log.node_id}`);
-  },
-});
-
-// 4. 获取生成的音频文件路径
-const { logs } = await client.tasks.getLogs(task.id);
-const outputLog = logs.find(log =>
-  log.type === "BlockFinished" && log.event?.result?.audio_address
-);
-
-console.log(`音频文件: ${outputLog.event.result.audio_address}`);
-// 输出: /oomol-driver/oomol-storage/1765206844.mp3
+console.log(`音频文件: ${result.audio_address}`);
+// 输出: /oomol-driver/oomol-storage/1765207389.mp3
 ```
 
 **测试结果**:
@@ -461,9 +478,9 @@ console.log(`音频文件: ${outputLog.event.result.audio_address}`);
 - ✅ 状态轮询正常 (created → running → completed)
 - ✅ 总用时: 5.3 秒
 - ✅ 成功生成音频文件
-- ✅ 实时日志流正常工作
+- ✅ 自动返回结果对象
 
-查看完整代码: [test-text-to-audio.ts](./examples/test-text-to-audio.ts)
+查看完整代码: [simple-run.ts](./examples/simple-run.ts)
 
 ## TypeScript 支持
 
