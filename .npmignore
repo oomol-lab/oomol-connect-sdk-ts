@@ -1,0 +1,25 @@
+# 源代码（只发布编译后的 dist）
+src/
+examples/
+*.ts
+!*.d.ts
+
+# 配置文件
+tsconfig.json
+.gitignore
+.DS_Store
+
+# 开发文件
+node_modules/
+coverage/
+*.log
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# 测试和构建
+build/
+*.test.js
+*.spec.js

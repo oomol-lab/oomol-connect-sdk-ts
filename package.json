@@ -10,15 +10,26 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc -p tsconfig.json",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oomol/oomol-connect-sdk.git"
   },
   "keywords": [
     "oomol",
     "connect",
     "sdk",
-    "typescript"
+    "typescript",
+    "api-client",
+    "task-management"
   ],
+  "author": "OOMOL",
   "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "typescript": "^5.3.0"

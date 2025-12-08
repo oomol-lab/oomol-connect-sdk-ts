@@ -4,7 +4,11 @@
       "Bash(npm install:*)",
       "Bash(npm run build:*)",
       "Bash(tree:*)",
-      "Bash(npx tsx:*)"
+      "Bash(npx tsx:*)",
+      "Bash(npm pack:*)",
+      "Bash(npm whoami:*)",
+      "Bash(npm publish:*)",
+      "Bash(npm pkg fix:*)"
     ],
     "deny": [],
     "ask": []
