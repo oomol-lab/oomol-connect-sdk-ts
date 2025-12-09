@@ -28,7 +28,7 @@ export class TasksClient {
    */
   async create(request: CreateTaskRequest): Promise<CreateTaskResponse> {
     const body: Record<string, unknown> = {
-      manifest: request.manifest,
+      manifest: request.blockId,
     };
 
     if (request.inputValues !== undefined) {
@@ -45,12 +45,12 @@ export class TasksClient {
    * 创建任务 (multipart/form-data,支持文件上传)
    */
   async createWithFiles(
-    manifest: string,
+    blockId: string,
     inputValues: TaskInputValues,
     files: File | File[]
   ): Promise<CreateTaskResponse> {
     const formData = new FormData();
-    formData.append("manifest", manifest);
+    formData.append("manifest", blockId);
     formData.append("inputValues", JSON.stringify(normalizeInputValues(inputValues)));
 
     const fileArray = Array.isArray(files) ? files : [files];
@@ -188,12 +188,12 @@ export class TasksClient {
    * 创建带文件上传的任务并等待完成
    */
   async createWithFilesAndWait(
-    manifest: string,
+    blockId: string,
     inputValues: TaskInputValues,
     files: File | File[],
     pollingOptions?: PollingOptions
   ): Promise<{ taskId: string; task: Task }> {
-    const { task } = await this.createWithFiles(manifest, inputValues, files);
+    const { task } = await this.createWithFiles(blockId, inputValues, files);
     const completedTask = await this.waitForCompletion(task.id, pollingOptions);
     return { taskId: task.id, task: completedTask };
   }
@@ -230,7 +230,7 @@ export class TasksClient {
    * 运行带文件上传的任务并直接获取结果
    */
   async runWithFiles(
-    manifest: string,
+    blockId: string,
     inputValues: TaskInputValues,
     files: File | File[],
     pollingOptions?: PollingOptions
@@ -242,7 +242,7 @@ export class TasksClient {
   }> {
     // 创建并等待任务完成
     const { taskId, task } = await this.createWithFilesAndWait(
-      manifest,
+      blockId,
       inputValues,
       files,
       pollingOptions

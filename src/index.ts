@@ -2,7 +2,6 @@
 export { OomolConnectClient } from "./client.js";
 
 // 子客户端
-export { FlowsClient } from "./flows.js";
 export { BlocksClient } from "./blocks.js";
 export { TasksClient } from "./tasks.js";
 export { PackagesClient } from "./packages.js";
@@ -14,10 +13,6 @@ export type {
   InputHandle,
   InputValue,
   NodeInputs,
-  // Flows 类型
-  FlowInputNode,
-  Flow,
-  ListFlowsResponse,
   // Blocks 类型
   Block,
   ListBlocksResponse,

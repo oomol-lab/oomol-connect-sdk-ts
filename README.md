@@ -24,7 +24,7 @@ const client = new OomolConnectClient({
 
 // 一行代码运行任务并获取结果
 const { result, taskId, logs } = await client.tasks.run({
-  manifest: "audio-lab::text-to-audio",
+  blockId: "audio-lab::text-to-audio",
   inputValues: {
     text: "你好,我是一只小柯基",
   },
@@ -44,13 +44,13 @@ const client = new OomolConnectClient({
   baseUrl: "http://localhost:3000/api",
 });
 
-// 列出所有 flows
-const { flows } = await client.flows.list();
-console.log(flows);
+// 列出所有 blocks
+const { blocks } = await client.blocks.list();
+console.log(blocks);
 
 // 创建任务
 const { task } = await client.tasks.create({
-  manifest: "flow-1",
+  blockId: blocks[0].blockId,
   inputValues: { input1: "value1", input2: 123 },
 });
 console.log(`任务已创建: ${task.id}`);
@@ -73,27 +73,29 @@ const client = new OomolConnectClient({
 
 ## API 模块
 
-SDK 提供了四个主要模块:
+SDK 提供了三个主要模块:
 
-### 1. Flows 模块
-
-管理 flows (流程):
-
-```typescript
-// 列出所有 flows
-const { flows } = await client.flows.list();
-```
-
-### 2. Blocks 模块
+### 1. Blocks 模块
 
 管理 blocks (区块):
 
 ```typescript
 // 列出所有 blocks
 const { blocks } = await client.blocks.list();
+
+// 每个 block 包含 blockId 字段，可以直接用于创建任务
+// block.blockId 格式: "package::name"
+const block = blocks[0];
+console.log(block.blockId); // 例如: "audio-lab::text-to-audio"
+
+// 直接使用 blockId 创建任务
+const { result } = await client.tasks.run({
+  blockId: block.blockId,
+  inputValues: { text: "你好" },
+});
 ```
 
-### 3. Tasks 模块
+### 2. Tasks 模块
 
 管理任务 (核心功能):
 
@@ -103,8 +105,8 @@ const { tasks } = await client.tasks.list();
 
 // 创建任务
 const { task } = await client.tasks.create({
-  manifest: "flow-1",
-  inputValues: { input1: "value1" },
+  blockId: "audio-lab::text-to-audio",
+  inputValues: { text: "你好" },
 });
 
 // 获取任务详情
@@ -117,7 +119,7 @@ await client.tasks.stop(taskId);
 const { logs } = await client.tasks.getLogs(taskId);
 ```
 
-### 4. Packages 模块
+### 3. Packages 模块
 
 管理包安装:
 
@@ -144,7 +146,7 @@ SDK 提供了最简单的 `run()` 方法，自动完成创建任务、等待完�
 ```typescript
 // 方法1: 运行任务并获取结果（推荐）
 const { result, taskId, task, logs } = await client.tasks.run({
-  manifest: "audio-lab::text-to-audio",
+  blockId: "audio-lab::text-to-audio",
   inputValues: {
     text: "你好,我是一只小柯基",
   },
@@ -157,15 +159,15 @@ console.log("任务结果:", result);
 // 方法2: 带文件上传的任务
 const file = new File(["content"], "test.txt");
 const { result, taskId } = await client.tasks.runWithFiles(
-  "pkg-1::block-1",
-  { input1: "value1" },
+  "audio-lab::text-to-audio",
+  { text: "你好" },
   file
 );
 
 // 方法3: 带进度回调
 const { result } = await client.tasks.run(
   {
-    manifest: "audio-lab::text-to-audio",
+    blockId: "audio-lab::text-to-audio",
     inputValues: { text: "你好" },
   },
   {
@@ -186,8 +188,8 @@ import { BackoffStrategy } from "oomol-connect-sdk";
 
 // 方法1: 手动轮询
 const { task } = await client.tasks.create({
-  manifest: "flow-1",
-  inputValues: { input1: "value1" },
+  blockId: "audio-lab::text-to-audio",
+  inputValues: { text: "你好" },
 });
 
 const completedTask = await client.tasks.waitForCompletion(task.id, {
@@ -207,8 +209,8 @@ const completedTask = await client.tasks.waitForCompletion(task.id, {
 // 方法2: 使用便捷方法
 const { taskId, task: finalTask } = await client.tasks.createAndWait(
   {
-    manifest: "flow-1",
-    inputValues: { input1: "value1" },
+    blockId: "audio-lab::text-to-audio",
+    inputValues: { text: "你好" },
   },
   {
     intervalMs: 2000,
@@ -227,23 +229,23 @@ const { taskId, task: finalTask } = await client.tasks.createAndWait(
 // 单文件上传
 const file = new File(["content"], "test.txt");
 const { task } = await client.tasks.createWithFiles(
-  "pkg-1::block-1",
-  { input1: "value1" },
+  "audio-lab::text-to-audio",
+  { text: "你好" },
   file
 );
 
 // 多文件上传
 const files = [file1, file2, file3];
 const { task } = await client.tasks.createWithFiles(
-  "pkg-1::block-1",
-  { input1: "value1" },
+  "audio-lab::image-processor",
+  { mode: "batch" },
   files
 );
 
 // 上传并等待完成
 const { taskId, task } = await client.tasks.createWithFilesAndWait(
-  "pkg-1::block-1",
-  { input1: "value1" },
+  "audio-lab::text-to-audio",
+  { text: "你好" },
   file,
   {
     intervalMs: 2000,
@@ -301,37 +303,37 @@ SDK 支持三种不同的 `inputValues` 格式:
 ```typescript
 // 格式1: 对象格式 (最简单)
 await client.tasks.create({
-  manifest: "flow-1",
+  blockId: "audio-lab::text-to-audio",
   inputValues: {
-    input1: "value1",
-    input2: 123,
+    text: "你好",
+    voice: "default",
   },
 });
 
 // 格式2: 数组格式
 await client.tasks.create({
-  manifest: "flow-1",
+  blockId: "audio-lab::text-to-audio",
   inputValues: [
-    { handle: "input1", value: "value1" },
-    { handle: "input2", value: 123 },
+    { handle: "text", value: "你好" },
+    { handle: "voice", value: "default" },
   ],
 });
 
 // 格式3: 节点格式 (用于多节点)
 await client.tasks.create({
-  manifest: "flow-1",
+  blockId: "audio-lab::text-to-audio",
   inputValues: [
     {
       nodeId: "node1",
       inputs: [
-        { handle: "input1", value: "value1" },
-        { handle: "input2", value: 123 },
+        { handle: "text", value: "你好" },
+        { handle: "voice", value: "default" },
       ],
     },
     {
       nodeId: "node2",
       inputs: [
-        { handle: "input3", value: "value3" },
+        { handle: "speed", value: 1.0 },
       ],
     },
   ],
@@ -353,8 +355,8 @@ import {
 
 try {
   const { task } = await client.tasks.createAndWait({
-    manifest: "flow-1",
-    inputValues: { input1: "value" },
+    blockId: "audio-lab::text-to-audio",
+    inputValues: { text: "你好" },
   });
 } catch (error) {
   if (error instanceof ApiError) {
@@ -456,7 +458,7 @@ const client = new OomolConnectClient({
 // 使用 run 方法 - 一步完成所有操作
 const { result, taskId, task } = await client.tasks.run(
   {
-    manifest: "audio-lab::text-to-audio",
+    blockId: "audio-lab::text-to-audio",
     inputValues: {
       text: "你好,我是一只小柯基",
     },

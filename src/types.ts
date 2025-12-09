@@ -17,24 +17,6 @@ export interface NodeInputs {
   inputs: InputValue[];
 }
 
-// ============ Flows 类型 ============
-
-export interface FlowInputNode {
-  nodeId: string;
-  inputs: InputHandle[];
-}
-
-export interface Flow {
-  name: string;
-  path: string;
-  description?: string;
-  inputs?: FlowInputNode[];
-}
-
-export interface ListFlowsResponse {
-  flows: Flow[];
-}
-
 // ============ Blocks 类型 ============
 
 export interface Block {
@@ -43,6 +25,7 @@ export interface Block {
   path: string;
   description?: string;
   inputs?: InputHandle[];
+  blockId: string; // 格式: "package::name"
 }
 
 export interface ListBlocksResponse {
@@ -156,7 +139,7 @@ export type TaskInputValues =
   | NodeInputs[];                               // 格式3: [{ nodeId: "node1", inputs: [...] }]
 
 export interface CreateTaskRequest {
-  manifest: string;
+  blockId: string;
   inputValues?: TaskInputValues;
 }
 

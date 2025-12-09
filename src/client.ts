@@ -1,7 +1,6 @@
 import type { ClientOptions } from "./types.js";
 import { ApiError } from "./errors.js";
 import { buildUrl } from "./utils.js";
-import { FlowsClient } from "./flows.js";
 import { BlocksClient } from "./blocks.js";
 import { TasksClient } from "./tasks.js";
 import { PackagesClient } from "./packages.js";
@@ -11,7 +10,6 @@ export class OomolConnectClient {
   private readonly fetchFn: typeof fetch;
   private readonly defaultHeaders: Record<string, string>;
 
-  public readonly flows: FlowsClient;
   public readonly blocks: BlocksClient;
   public readonly tasks: TasksClient;
   public readonly packages: PackagesClient;
@@ -26,7 +24,6 @@ export class OomolConnectClient {
       this.defaultHeaders["Authorization"] = options.apiToken;
     }
 
-    this.flows = new FlowsClient(this);
     this.blocks = new BlocksClient(this);
     this.tasks = new TasksClient(this);
     this.packages = new PackagesClient(this);
