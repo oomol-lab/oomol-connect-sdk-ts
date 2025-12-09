@@ -26,6 +26,7 @@ export interface Block {
   description?: string;
   inputs?: InputHandle[];
   blockId: string; // 格式: "package::name"
+  version?: string; // 从 path 中提取的版本号 (如: "0.1.9")
 }
 
 export interface ListBlocksResponse {
