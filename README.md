@@ -396,7 +396,7 @@ interface ClientOptions {
   /** API 基础 URL, 默认 /api */
   baseUrl?: string;
 
-  /** API Token (会自动添加到 Authorization 头作为 Bearer token) */
+  /** API Token (会自动添加到 Authorization 头) */
   apiToken?: string;
 
   /** 自定义 fetch 实现 */
@@ -408,7 +408,8 @@ interface ClientOptions {
 ```
 
 **说明:**
-- `apiToken`: 最简单的鉴权方式,SDK 会自动将其添加为 `Authorization: Bearer <token>`
+
+- `apiToken`: 最简单的鉴权方式,SDK 会自动将其添加为 `Authorization` 头
 - `defaultHeaders`: 可以覆盖或添加任何自定义请求头
 - 如果同时提供 `apiToken` 和 `defaultHeaders.Authorization`,`defaultHeaders` 的值会覆盖 `apiToken`
 

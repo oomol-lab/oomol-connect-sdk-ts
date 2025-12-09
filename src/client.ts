@@ -23,7 +23,7 @@ export class OomolConnectClient {
 
     // 如果提供了 apiToken,自动添加到 Authorization 头
     if (options.apiToken) {
-      this.defaultHeaders["Authorization"] = `Bearer ${options.apiToken}`;
+      this.defaultHeaders["Authorization"] = options.apiToken;
     }
 
     this.flows = new FlowsClient(this);

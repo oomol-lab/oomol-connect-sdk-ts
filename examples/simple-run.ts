@@ -4,10 +4,8 @@ async function simpleExample() {
   console.log("=== SDK 便捷方法示例 ===\n");
 
   const client = new OomolConnectClient({
-    baseUrl: "https://dd6994a962285240eaf0efeb628fffc62d42d3d5-frp1.fex.oomol.com/api",
-    defaultHeaders: {
-      "Authorization": "api-c656404dfec3af418c6641d165c036b4b7579826bcfa4e0cf2bf6fc7d2481a97",
-    },
+    baseUrl: "https://your-api-server.com/api",
+    apiToken: "your-api-token-here",
   });
 
   try {

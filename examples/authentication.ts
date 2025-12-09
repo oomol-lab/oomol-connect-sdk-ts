@@ -7,7 +7,7 @@ async function main() {
   console.log("方式1: 使用 apiToken 参数");
   const client1 = new OomolConnectClient({
     baseUrl: "http://localhost:3000/api",
-    apiToken: "your-api-token-here",  // 自动添加 Bearer 前缀
+    apiToken: "your-api-token-here",  // 自动添加到 Authorization 头
   });
 
   try {
@@ -17,12 +17,12 @@ async function main() {
     console.error("✗ 鉴权失败:", error.message);
   }
 
-  // 方式2: 使用 Bearer Token
-  console.log("\n方式2: 使用 Bearer Token");
+  // 方式2: 使用 Authorization 头 (直接指定)
+  console.log("\n方式2: 使用 Authorization 头");
   const client2 = new OomolConnectClient({
     baseUrl: "http://localhost:3000/api",
     defaultHeaders: {
-      "Authorization": "Bearer your-api-token-here",
+      "Authorization": "your-api-token-here",
     },
   });
 

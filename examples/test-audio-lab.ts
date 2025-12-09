@@ -5,8 +5,8 @@ async function testTextToSpeech() {
 
   // 创建客户端
   const client = new OomolConnectClient({
-    baseUrl: "https://dd6994a962285240eaf0efeb628fffc62d42d3d5-frp1.fex.oomol.com/api",
-    apiToken: "api-c656404dfec3af418c6641d165c036b4b7579826bcfa4e0cf2bf6fc7d2481a97",
+    baseUrl: "https://your-api-server.com/api",
+    apiToken: "your-api-token-here",
   });
 
   try {
@@ -110,7 +110,7 @@ async function testTextToSpeech() {
       console.error("1. API Token 格式不正确");
       console.error("2. API Token 已过期");
       console.error("3. API Token 没有访问权限");
-      console.error("4. API 服务器的认证方式不是 Bearer Token");
+      console.error("4. API 服务器的认证方式配置不正确");
       console.error("\n请检查 API Token 或尝试使用不同的认证方式。");
     }
   }

@@ -1,13 +1,13 @@
 import { OomolConnectClient } from "../src/index.js";
 
 async function testDifferentAuthMethods() {
-  const baseUrl = "https://dd6994a962285240eaf0efeb628fffc62d42d3d5-frp1.fex.oomol.com/api";
-  const apiKey = "api-c656404dfec3af418c6641d165c036b4b7579826bcfa4e0cf2bf6fc7d2481a97";
+  const baseUrl = "https://your-api-server.com/api";
+  const apiKey = "your-api-token-here";
 
   console.log("=== 测试不同的认证方式 ===\n");
 
-  // 方式1: 使用 apiToken (Bearer)
-  console.log("方式1: Bearer Token (默认)");
+  // 方式1: 使用 apiToken
+  console.log("方式1: 使用 apiToken");
   try {
     const client1 = new OomolConnectClient({
       baseUrl,
@@ -52,8 +52,8 @@ async function testDifferentAuthMethods() {
     console.log(`✗ 失败: ${error.message}\n`);
   }
 
-  // 方式4: Authorization: api-key (不带 Bearer)
-  console.log("方式4: Authorization 头 (不带 Bearer)");
+  // 方式4: Authorization 头 (直接传 token)
+  console.log("方式4: Authorization 头 (直接传 token)");
   try {
     const client4 = new OomolConnectClient({
       baseUrl,

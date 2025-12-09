@@ -3,11 +3,11 @@ import { OomolConnectClient } from "../src/index.js";
 async function testTextToAudio() {
   console.log("=== 测试 audio-lab 文字生成语音 ===\n");
 
-  // 使用正确的认证方式:直接传 API key,不带 Bearer 前缀
+  // 使用正确的认证方式:直接传 API key
   const client = new OomolConnectClient({
-    baseUrl: "https://dd6994a962285240eaf0efeb628fffc62d42d3d5-frp1.fex.oomol.com/api",
+    baseUrl: "https://your-api-server.com/api",
     defaultHeaders: {
-      "Authorization": "api-c656404dfec3af418c6641d165c036b4b7579826bcfa4e0cf2bf6fc7d2481a97",
+      "Authorization": "your-api-token-here",
     },
   });
 
