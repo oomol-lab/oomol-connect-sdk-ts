@@ -24,6 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **自动生成 blockId**: `blocks.list()` 返回的每个 block 现在自动包含 `blockId` 字段（格式：`"package::name"`），用户无需手动拼接
+- **版本号字段**: `blocks.list()` 返回的每个 block 现在包含 `version` 字段，自动从安装路径中提取版本号（如 `"0.1.9"`）
+- **智能版本过滤**: `blocks.list()` 默认只返回每个 package 的最新版本，大幅减少返回数据量
+  - 默认行为: 只返回最新版本（从 362 个减少到 132 个 blocks）
+  - 可选参数: `blocks.list({ includeAllVersions: true })` 返回所有版本
 
 ### Changed
 
@@ -34,7 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### 从 0.1.x 升级到 0.2.0
 
-**1. 移除 Flows 相关代码**
+#### 1. 移除 Flows 相关代码
 
 ```typescript
 // 旧版本 (0.1.x) - 不再支持
@@ -44,7 +48,7 @@ const { flows } = await client.flows.list();
 const { blocks } = await client.blocks.list();
 ```
 
-**2. 更新字段名称**
+#### 2. 更新字段名称
 
 ```typescript
 // 旧版本 (0.1.x)
@@ -60,15 +64,26 @@ await client.tasks.create({
 });
 ```
 
-**3. 使用自动生成的 blockId**
+#### 3. 使用自动生成的 blockId 和版本号
 
 ```typescript
 // 新版本 (0.2.0) - 推荐方式
 const { blocks } = await client.blocks.list();
+
+// Block 自动包含 blockId 和 version 字段
+blocks.forEach(block => {
+  console.log(`${block.blockId} - v${block.version}`);
+  // 例如: ffmpeg::audio_video_separation - v0.1.9
+});
+
+// 使用 blockId 创建任务
 await client.tasks.run({
-  blockId: blocks[0].blockId, // 自动包含完整的 blockId
+  blockId: blocks[0].blockId,
   inputValues: { text: "你好" }
 });
+
+// 如需查看所有版本
+const allBlocks = await client.blocks.list({ includeAllVersions: true });
 ```
 
 ## [0.1.1] - 2024-XX-XX
