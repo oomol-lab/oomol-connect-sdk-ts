@@ -8,7 +8,10 @@
       "Bash(npm pack:*)",
       "Bash(npm whoami:*)",
       "Bash(npm publish:*)",
-      "Bash(npm pkg fix:*)"
+      "Bash(npm pkg fix:*)",
+      "Bash(git add:*)",
+      "Bash(git restore:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
