@@ -14,14 +14,14 @@ export class PackagesClient {
   constructor(private client: OomolConnectClient) {}
 
   /**
-   * 列出已安装的包
+   * List installed packages
    */
   async list(): Promise<ListPackagesResponse> {
     return this.client.request<ListPackagesResponse>("/packages");
   }
 
   /**
-   * 安装包
+   * Install package
    */
   async install(name: string, version: string): Promise<InstallPackageResponse> {
     return this.client.request<InstallPackageResponse>("/packages/install", {
@@ -31,21 +31,21 @@ export class PackagesClient {
   }
 
   /**
-   * 列出所有安装任务
+   * List all installation tasks
    */
   async listInstallTasks(): Promise<ListInstallTasksResponse> {
     return this.client.request<ListInstallTasksResponse>("/packages/install");
   }
 
   /**
-   * 获取安装任务状态
+   * Get installation task status
    */
   async getInstallTask(taskId: string): Promise<GetInstallTaskResponse> {
     return this.client.request<GetInstallTaskResponse>(`/packages/install/${encodeURIComponent(taskId)}`);
   }
 
   /**
-   * 轮询等待安装完成
+   * Poll and wait for installation to complete
    */
   async waitForInstallCompletion(
     taskId: string,
@@ -127,7 +127,7 @@ export class PackagesClient {
   }
 
   /**
-   * 安装并等待完成 (便捷方法)
+   * Install and wait for completion (convenience method)
    */
   async installAndWait(
     name: string,

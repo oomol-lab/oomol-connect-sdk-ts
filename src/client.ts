@@ -21,7 +21,7 @@ export class OomolConnectClient {
     this.fetchFn = options.fetch ?? fetch;
     this.defaultHeaders = options.defaultHeaders ?? {};
 
-    // 如果提供了 apiToken,自动添加到 Authorization 头
+    // If apiToken is provided, automatically add it to Authorization header
     if (options.apiToken) {
       this.defaultHeaders["Authorization"] = options.apiToken;
     }
@@ -39,7 +39,7 @@ export class OomolConnectClient {
       ...(init.headers as Record<string, string> || {}),
     };
 
-    // 如果是 JSON body,自动添加 Content-Type
+    // If JSON body, automatically add Content-Type
     if (init.body && typeof init.body === "string") {
       headers["Content-Type"] = "application/json";
     }

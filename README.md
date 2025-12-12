@@ -1,16 +1,18 @@
 # OOMOL Connect SDK
 
-一个用于与 OOMOL Connect API 交互的 TypeScript SDK,提供完整的类型支持和现代化的 API 设计。
+[中文文档](./README.zh-CN.md) | English
 
-## 安装
+A TypeScript SDK for interacting with OOMOL Connect API, providing complete type support and modern API design.
+
+## Installation
 
 ```bash
 npm install oomol-connect-sdk
 ```
 
-## 快速开始
+## Quick Start
 
-### 最简单的用法 - 直接运行任务获取结果
+### Simplest Usage - Run Task and Get Result
 
 ```typescript
 import { OomolConnectClient } from "oomol-connect-sdk";
@@ -22,41 +24,41 @@ const client = new OomolConnectClient({
   },
 });
 
-// 一行代码运行任务并获取结果
+// Run task and get result in one line
 const { result, taskId, logs } = await client.tasks.run({
   blockId: "audio-lab::text-to-audio",
   inputValues: {
-    text: "你好,我是一只小柯基",
+    text: "Hello, I'm a little corgi",
   },
 });
 
-console.log("任务结果:", result);
-// 输出: { audio_address: "/oomol-driver/oomol-storage/1765206844.mp3" }
+console.log("Task result:", result);
+// Output: { audio_address: "/oomol-driver/oomol-storage/1765206844.mp3" }
 ```
 
-### 基础使用
+### Basic Usage
 
 ```typescript
 import { OomolConnectClient } from "oomol-connect-sdk";
 
-// 创建客户端
+// Create client
 const client = new OomolConnectClient({
   baseUrl: "http://localhost:3000/api",
 });
 
-// 列出所有 blocks
+// List all blocks
 const { blocks } = await client.blocks.list();
 console.log(blocks);
 
-// 创建任务
+// Create task
 const { task } = await client.tasks.create({
   blockId: blocks[0].blockId,
   inputValues: { input1: "value1", input2: 123 },
 });
-console.log(`任务已创建: ${task.id}`);
+console.log(`Task created: ${task.id}`);
 ```
 
-### 鉴权配置
+### Authentication Configuration
 
 ```typescript
 import { OomolConnectClient } from "oomol-connect-sdk";
@@ -64,102 +66,102 @@ import { OomolConnectClient } from "oomol-connect-sdk";
 const client = new OomolConnectClient({
   baseUrl: "https://your-api-server.com/api",
   defaultHeaders: {
-    "Authorization": "api-your-token-here",  // 直接传入 API key
+    "Authorization": "api-your-token-here",  // Pass API key directly
   },
 });
 ```
 
-> **注意**: 不同的 OOMOL API 服务器可能使用不同的鉴权方式，请根据实际情况调整 Authorization 头的格式。
+> **Note**: Different OOMOL API servers may use different authentication methods. Please adjust the Authorization header format according to your actual situation.
 
-## API 模块
+## API Modules
 
-SDK 提供了四个主要模块:
+The SDK provides four main modules:
 
-### 1. Blocks 模块
+### 1. Blocks Module
 
-管理 blocks (区块):
+Manage blocks:
 
 ```typescript
-// 列出所有 blocks
+// List all blocks
 const { blocks } = await client.blocks.list();
 
-// 每个 block 包含 blockId 字段，可以直接用于创建任务
-// block.blockId 格式: "package::name"
+// Each block contains blockId field, which can be used directly to create tasks
+// block.blockId format: "package::name"
 const block = blocks[0];
-console.log(block.blockId); // 例如: "audio-lab::text-to-audio"
+console.log(block.blockId); // Example: "audio-lab::text-to-audio"
 
-// 直接使用 blockId 创建任务
+// Use blockId directly to create task
 const { result } = await client.tasks.run({
   blockId: block.blockId,
-  inputValues: { text: "你好" },
+  inputValues: { text: "Hello" },
 });
 ```
 
-### 2. Tasks 模块
+### 2. Tasks Module
 
-管理任务 (核心功能):
+Manage tasks (core functionality):
 
 ```typescript
-// 列出所有任务
+// List all tasks
 const { tasks } = await client.tasks.list();
 
-// 创建任务
+// Create task
 const { task } = await client.tasks.create({
   blockId: "audio-lab::text-to-audio",
-  inputValues: { text: "你好" },
+  inputValues: { text: "Hello" },
 });
 
-// 获取任务详情
+// Get task details
 const { task: detail } = await client.tasks.get(taskId);
 
-// 停止任务
+// Stop task
 await client.tasks.stop(taskId);
 
-// 获取任务日志
+// Get task logs
 const { logs } = await client.tasks.getLogs(taskId);
 ```
 
-### 3. Applets 模块
+### 3. Applets Module
 
-管理小程序 (applets)。Applet 是预填了参数的 Block,运行 applet 相当于用预设参数运行对应的 block:
+Manage applets. An Applet is a Block with pre-filled parameters. Running an applet is equivalent to running the corresponding block with preset parameters:
 
 ```typescript
-// 列出所有 applets
+// List all applets
 const applets = await client.applets.list();
 
-// 每个 applet 包含:
-// - appletId: applet 的唯一 ID
-// - userId: 创建者的用户 ID
-// - data: applet 数据
-//   - title/description: 标题和描述
-//   - packageId: 关联的包 ID (如 "json-repair-1.0.1")
-//   - blockName: 关联的 block 名称
-//   - presetInputs: 预设输入参数
-// - createdAt/updatedAt: 时间戳
+// Each applet contains:
+// - appletId: unique ID of the applet
+// - userId: creator's user ID
+// - data: applet data
+//   - title/description: title and description
+//   - packageId: associated package ID (e.g., "json-repair-1.0.1")
+//   - blockName: associated block name
+//   - presetInputs: preset input parameters
+// - createdAt/updatedAt: timestamps
 
-console.log(applets[0].data.title);        // applet 标题
+console.log(applets[0].data.title);        // applet title
 console.log(applets[0].data.packageId);    // "json-repair-1.0.1"
 console.log(applets[0].data.blockName);    // "json-repair"
 console.log(applets[0].data.presetInputs); // { content: "...", indent: 2 }
 
-// 运行 applet (使用所有预设参数)
+// Run applet (using all preset parameters)
 const { result, taskId } = await client.applets.run({
   appletId: "84dc8cac-7f91-4bd1-a3b6-6715bf4f81c9"
 });
-console.log("执行结果:", result);
+console.log("Execution result:", result);
 
-// 运行 applet (覆盖部分预设参数)
-// 用户提供的参数会覆盖预设值,未提供的参数使用预设值
+// Run applet (override some preset parameters)
+// User-provided parameters will override preset values, unprovided parameters use preset values
 const { result, taskId } = await client.applets.run({
   appletId: "84dc8cac-7f91-4bd1-a3b6-6715bf4f81c9",
   inputValues: {
-    content: "{ \"new\": \"value\" }", // 覆盖预设值
-    indent: 4,                         // 覆盖预设值
-    // preview 字段未提供,使用预设值
+    content: "{ \"new\": \"value\" }", // Override preset value
+    indent: 4,                         // Override preset value
+    // preview field not provided, uses preset value
   }
 });
 
-// 运行 applet (带轮询回调)
+// Run applet (with polling callbacks)
 const { result, task, logs } = await client.applets.run(
   {
     appletId: "84dc8cac-7f91-4bd1-a3b6-6715bf4f81c9",
@@ -167,141 +169,141 @@ const { result, task, logs } = await client.applets.run(
   },
   {
     intervalMs: 2000,
-    onProgress: (task) => console.log(`进度: ${task.status}`),
-    onLog: (log) => console.log(`日志:`, log)
+    onProgress: (task) => console.log(`Progress: ${task.status}`),
+    onLog: (log) => console.log(`Log:`, log)
   }
 );
 ```
 
-**参数合并规则**:
+**Parameter Merging Rules**:
 
 ```typescript
-// 预设参数
+// Preset parameters
 presetInputs = { content: "{ \"a\": \"b\" }", indent: 2, preview: true }
 
-// 用户参数
+// User parameters
 inputValues = { content: "new", indent: 4 }
 
-// 合并结果 (用户参数优先)
+// Merged result (user parameters take precedence)
 mergedInputs = { content: "new", indent: 4, preview: true }
 ```
 
-### 4. Packages 模块
+### 4. Packages Module
 
-管理包安装:
+Manage package installation:
 
 ```typescript
-// 列出已安装的包
+// List installed packages
 const { packages } = await client.packages.list();
 
-// 安装包
+// Install package
 const response = await client.packages.install("package-name", "1.0.0");
 
-// 列出安装任务
+// List installation tasks
 const { tasks } = await client.packages.listInstallTasks();
 
-// 获取安装任务状态
+// Get installation task status
 const { task } = await client.packages.getInstallTask(taskId);
 ```
 
-## 高级功能
+## Advanced Features
 
-### 便捷方法 - 一步运行任务
+### Convenient Method - Run Task in One Step
 
-SDK 提供了最简单的 `run()` 方法，自动完成创建任务、等待完成、获取结果的全流程：
+The SDK provides the simplest `run()` method that automatically completes the full workflow of creating a task, waiting for completion, and getting results:
 
 ```typescript
-// 方法1: 运行任务并获取结果（推荐）
+// Method 1: Run task and get result (recommended)
 const { result, taskId, task, logs } = await client.tasks.run({
   blockId: "audio-lab::text-to-audio",
   inputValues: {
-    text: "你好,我是一只小柯基",
+    text: "Hello, I'm a little corgi",
   },
 });
 
-console.log("任务ID:", taskId);
-console.log("任务结果:", result);
+console.log("Task ID:", taskId);
+console.log("Task result:", result);
 // result: { audio_address: "/oomol-driver/oomol-storage/1765206844.mp3" }
 
-// 方法2: 带文件上传的任务
+// Method 2: Task with file upload
 const file = new File(["content"], "test.txt");
 const { result, taskId } = await client.tasks.runWithFiles(
   "audio-lab::text-to-audio",
-  { text: "你好" },
+  { text: "Hello" },
   file
 );
 
-// 方法3: 带进度回调
+// Method 3: With progress callback
 const { result } = await client.tasks.run(
   {
     blockId: "audio-lab::text-to-audio",
-    inputValues: { text: "你好" },
+    inputValues: { text: "Hello" },
   },
   {
     intervalMs: 2000,
     onProgress: (task) => {
-      console.log(`进度: ${task.status}`);
+      console.log(`Progress: ${task.status}`);
     },
   }
 );
 ```
 
-### 任务轮询
+### Task Polling
 
-SDK 提供了强大的任务轮询功能,支持进度回调和日志流:
+The SDK provides powerful task polling functionality with progress callbacks and log streaming:
 
 ```typescript
 import { BackoffStrategy } from "oomol-connect-sdk";
 
-// 方法1: 手动轮询
+// Method 1: Manual polling
 const { task } = await client.tasks.create({
   blockId: "audio-lab::text-to-audio",
-  inputValues: { text: "你好" },
+  inputValues: { text: "Hello" },
 });
 
 const completedTask = await client.tasks.waitForCompletion(task.id, {
-  intervalMs: 2000,              // 轮询间隔
-  timeoutMs: 300000,             // 5分钟超时
-  maxIntervalMs: 10000,          // 最大间隔
-  backoffStrategy: BackoffStrategy.Exponential,  // 指数退避
-  backoffFactor: 1.5,            // 退避系数
+  intervalMs: 2000,              // Polling interval
+  timeoutMs: 300000,             // 5 minutes timeout
+  maxIntervalMs: 10000,          // Maximum interval
+  backoffStrategy: BackoffStrategy.Exponential,  // Exponential backoff
+  backoffFactor: 1.5,            // Backoff factor
   onProgress: (task) => {
-    console.log(`任务状态: ${task.status}`);
+    console.log(`Task status: ${task.status}`);
   },
   onLog: (log) => {
-    console.log(`日志: ${log.type}`, log.event);
+    console.log(`Log: ${log.type}`, log.event);
   },
 });
 
-// 方法2: 使用便捷方法
+// Method 2: Using convenient method
 const { taskId, task: finalTask } = await client.tasks.createAndWait(
   {
     blockId: "audio-lab::text-to-audio",
-    inputValues: { text: "你好" },
+    inputValues: { text: "Hello" },
   },
   {
     intervalMs: 2000,
     onProgress: (task) => {
-      console.log(`进度: ${task.status}`);
+      console.log(`Progress: ${task.status}`);
     },
   }
 );
 ```
 
-### 文件上传
+### File Upload
 
-支持单文件和多文件上传:
+Supports single and multiple file uploads:
 
 ```typescript
-// 单文件上传
+// Single file upload
 const file = new File(["content"], "test.txt");
 const { task } = await client.tasks.createWithFiles(
   "audio-lab::text-to-audio",
-  { text: "你好" },
+  { text: "Hello" },
   file
 );
 
-// 多文件上传
+// Multiple files upload
 const files = [file1, file2, file3];
 const { task } = await client.tasks.createWithFiles(
   "audio-lab::image-processor",
@@ -309,10 +311,10 @@ const { task } = await client.tasks.createWithFiles(
   files
 );
 
-// 上传并等待完成
+// Upload and wait for completion
 const { taskId, task } = await client.tasks.createWithFilesAndWait(
   "audio-lab::text-to-audio",
-  { text: "你好" },
+  { text: "Hello" },
   file,
   {
     intervalMs: 2000,
@@ -321,35 +323,35 @@ const { taskId, task } = await client.tasks.createWithFilesAndWait(
 );
 ```
 
-### 包管理
+### Package Management
 
-安装包并等待完成:
+Install package and wait for completion:
 
 ```typescript
-// 安装并等待完成
+// Install and wait for completion
 const { taskId, task } = await client.packages.installAndWait(
   "my-package",
   "1.0.0",
   {
     intervalMs: 1000,
-    timeoutMs: 120000,  // 2分钟超时
+    timeoutMs: 120000,  // 2 minutes timeout
     onProgress: (installTask) => {
-      console.log(`安装状态: ${installTask.status}`);
+      console.log(`Installation status: ${installTask.status}`);
     },
   }
 );
 
-console.log(`安装完成: ${task.packagePath}`);
+console.log(`Installation completed: ${task.packagePath}`);
 ```
 
-### 取消轮询
+### Cancel Polling
 
-使用 `AbortSignal` 取消轮询:
+Use `AbortSignal` to cancel polling:
 
 ```typescript
 const abortController = new AbortController();
 
-// 5秒后取消
+// Cancel after 5 seconds
 setTimeout(() => abortController.abort(), 5000);
 
 try {
@@ -358,42 +360,42 @@ try {
   });
 } catch (error) {
   if (error.name === "TimeoutError") {
-    console.log("轮询已取消");
+    console.log("Polling cancelled");
   }
 }
 ```
 
-## InputValues 格式
+## InputValues Format
 
-SDK 支持三种不同的 `inputValues` 格式:
+The SDK supports three different `inputValues` formats:
 
 ```typescript
-// 格式1: 对象格式 (最简单)
+// Format 1: Object format (simplest)
 await client.tasks.create({
   blockId: "audio-lab::text-to-audio",
   inputValues: {
-    text: "你好",
+    text: "Hello",
     voice: "default",
   },
 });
 
-// 格式2: 数组格式
+// Format 2: Array format
 await client.tasks.create({
   blockId: "audio-lab::text-to-audio",
   inputValues: [
-    { handle: "text", value: "你好" },
+    { handle: "text", value: "Hello" },
     { handle: "voice", value: "default" },
   ],
 });
 
-// 格式3: 节点格式 (用于多节点)
+// Format 3: Node format (for multi-node)
 await client.tasks.create({
   blockId: "audio-lab::text-to-audio",
   inputValues: [
     {
       nodeId: "node1",
       inputs: [
-        { handle: "text", value: "你好" },
+        { handle: "text", value: "Hello" },
         { handle: "voice", value: "default" },
       ],
     },
@@ -407,9 +409,9 @@ await client.tasks.create({
 });
 ```
 
-## 错误处理
+## Error Handling
 
-SDK 提供了完善的错误处理:
+The SDK provides comprehensive error handling:
 
 ```typescript
 import {
@@ -423,94 +425,94 @@ import {
 try {
   const { task } = await client.tasks.createAndWait({
     blockId: "audio-lab::text-to-audio",
-    inputValues: { text: "你好" },
+    inputValues: { text: "Hello" },
   });
 } catch (error) {
   if (error instanceof ApiError) {
-    console.error(`HTTP 错误 ${error.status}:`, error.message);
-    console.error("响应:", error.response);
+    console.error(`HTTP error ${error.status}:`, error.message);
+    console.error("Response:", error.response);
   } else if (error instanceof TaskFailedError) {
-    console.error(`任务失败:`, error.task);
+    console.error(`Task failed:`, error.task);
   } else if (error instanceof TaskStoppedError) {
-    console.error(`任务已停止:`, error.task);
+    console.error(`Task stopped:`, error.task);
   } else if (error instanceof TimeoutError) {
-    console.error("操作超时:", error.message);
+    console.error("Operation timeout:", error.message);
   } else if (error instanceof InstallFailedError) {
-    console.error(`包安装失败:`, error.task.error);
+    console.error(`Package installation failed:`, error.task.error);
   } else {
-    console.error("未知错误:", error);
+    console.error("Unknown error:", error);
   }
 }
 ```
 
-## 配置选项
+## Configuration Options
 
-### 客户端配置
+### Client Configuration
 
 ```typescript
 const client = new OomolConnectClient({
-  baseUrl: "http://localhost:3000/api",  // API 基础 URL
-  apiToken: "your-api-token",            // API Token (推荐)
-  fetch: customFetch,                    // 自定义 fetch 实现
-  defaultHeaders: {                      // 默认请求头
+  baseUrl: "http://localhost:3000/api",  // API base URL
+  apiToken: "your-api-token",            // API Token (recommended)
+  fetch: customFetch,                    // Custom fetch implementation
+  defaultHeaders: {                      // Default headers
     "X-Custom-Header": "value",
   },
 });
 ```
 
-#### ClientOptions 接口
+#### ClientOptions Interface
 
 ```typescript
 interface ClientOptions {
-  /** API 基础 URL, 默认 /api */
+  /** API base URL, defaults to /api */
   baseUrl?: string;
 
-  /** API Token (会自动添加到 Authorization 头) */
+  /** API Token (automatically added to Authorization header) */
   apiToken?: string;
 
-  /** 自定义 fetch 实现 */
+  /** Custom fetch implementation */
   fetch?: typeof fetch;
 
-  /** 默认请求头 (会与 apiToken 生成的头合并) */
+  /** Default headers (merged with headers generated from apiToken) */
   defaultHeaders?: Record<string, string>;
 }
 ```
 
-**说明:**
+**Notes:**
 
-- `apiToken`: 最简单的鉴权方式,SDK 会自动将其添加为 `Authorization` 头
-- `defaultHeaders`: 可以覆盖或添加任何自定义请求头
-- 如果同时提供 `apiToken` 和 `defaultHeaders.Authorization`,`defaultHeaders` 的值会覆盖 `apiToken`
+- `apiToken`: The simplest authentication method, SDK will automatically add it as `Authorization` header
+- `defaultHeaders`: Can override or add any custom headers
+- If both `apiToken` and `defaultHeaders.Authorization` are provided, the value in `defaultHeaders` will override `apiToken`
 
-### 轮询配置
+### Polling Configuration
 
 ```typescript
 interface PollingOptions {
-  intervalMs?: number;              // 轮询间隔 (默认 2000ms)
-  timeoutMs?: number;               // 超时时间 (默认无限制)
-  maxIntervalMs?: number;           // 最大间隔 (默认 10000ms)
-  backoffStrategy?: BackoffStrategy; // 退避策略 (默认 Exponential)
-  backoffFactor?: number;           // 退避系数 (默认 1.5)
-  onProgress?: (task: Task) => void; // 进度回调
-  onLog?: (log: TaskLog) => void;   // 日志回调
-  signal?: AbortSignal;             // 取消信号
+  intervalMs?: number;              // Polling interval (default 2000ms)
+  timeoutMs?: number;               // Timeout (default unlimited)
+  maxIntervalMs?: number;           // Maximum interval (default 10000ms)
+  backoffStrategy?: BackoffStrategy; // Backoff strategy (default Exponential)
+  backoffFactor?: number;           // Backoff factor (default 1.5)
+  onProgress?: (task: Task) => void; // Progress callback
+  onLog?: (log: TaskLog) => void;   // Log callback
+  signal?: AbortSignal;             // Cancel signal
 }
 ```
 
-## 示例代码
+## Examples
 
-查看 [examples](./examples/) 目录获取更多示例:
+See the [examples](./examples/) directory for more examples:
 
-- [simple-run.ts](./examples/simple-run.ts) - 最简单的运行示例（推荐）
-- [basic.ts](./examples/basic.ts) - 基础使用示例
-- [polling.ts](./examples/polling.ts) - 轮询等待示例
-- [with-files.ts](./examples/with-files.ts) - 文件上传示例
-- [packages.ts](./examples/packages.ts) - 包管理示例
-- [test-text-to-audio.ts](./examples/test-text-to-audio.ts) - 完整的测试示例
+- [simple-run.ts](./examples/simple-run.ts) - Simplest run example (recommended)
+- [basic.ts](./examples/basic.ts) - Basic usage example
+- [polling.ts](./examples/polling.ts) - Polling wait example
+- [with-files.ts](./examples/with-files.ts) - File upload example
+- [packages.ts](./examples/packages.ts) - Package management example
+- [test-text-to-audio.ts](./examples/test-text-to-audio.ts) - Complete test example
 
-### 实际使用案例: Audio Lab 文字转语音
+### Real-world Use Case: Audio Lab Text-to-Speech
 
-以下是一个完整的实际使用案例，演示如何使用 SDK 调用 audio-lab 的文字转语音功能：
+Here's a complete real-world use case demonstrating how to use the SDK to call audio-lab's text-to-speech functionality:
 
 ```typescript
 import { OomolConnectClient } from "oomol-connect-sdk";
@@ -522,39 +524,39 @@ const client = new OomolConnectClient({
   },
 });
 
-// 使用 run 方法 - 一步完成所有操作
+// Using run method - completes all operations in one step
 const { result, taskId, task } = await client.tasks.run(
   {
     blockId: "audio-lab::text-to-audio",
     inputValues: {
-      text: "你好,我是一只小柯基",
+      text: "Hello, I'm a little corgi",
     },
   },
   {
     intervalMs: 2000,
     onProgress: (task) => {
-      console.log(`进度: ${task.status}`);
+      console.log(`Progress: ${task.status}`);
     },
   }
 );
 
-console.log(`音频文件: ${result.audio_address}`);
-// 输出: /oomol-driver/oomol-storage/1765207389.mp3
+console.log(`Audio file: ${result.audio_address}`);
+// Output: /oomol-driver/oomol-storage/1765207389.mp3
 ```
 
-**测试结果**:
+**Test Results**:
 
-- ✅ 任务创建成功
-- ✅ 状态轮询正常 (created → running → completed)
-- ✅ 总用时: 5.3 秒
-- ✅ 成功生成音频文件
-- ✅ 自动返回结果对象
+- ✅ Task created successfully
+- ✅ Status polling works (created → running → completed)
+- ✅ Total time: 5.3 seconds
+- ✅ Audio file generated successfully
+- ✅ Result object returned automatically
 
-查看完整代码: [simple-run.ts](./examples/simple-run.ts)
+See complete code: [simple-run.ts](./examples/simple-run.ts)
 
-## TypeScript 支持
+## TypeScript Support
 
-SDK 完全使用 TypeScript 编写,提供完整的类型定义:
+The SDK is fully written in TypeScript and provides complete type definitions:
 
 ```typescript
 import type {
@@ -568,21 +570,21 @@ import type {
 } from "oomol-connect-sdk";
 ```
 
-## 浏览器和 Node.js 支持
+## Browser and Node.js Support
 
-SDK 使用原生 `fetch` API,支持:
+The SDK uses native `fetch` API and supports:
 
-- **浏览器**: 所有现代浏览器
-- **Node.js**: 18+ (原生支持 `fetch`)
+- **Browser**: All modern browsers
+- **Node.js**: 18+ (native `fetch` support)
 
-## API 文档
+## API Documentation
 
-完整的 API 文档请参考 OpenAPI schema。
+For complete API documentation, please refer to the OpenAPI schema.
 
-## 许可证
+## License
 
 MIT
 
-## 贡献
+## Contributing
 
-欢迎提交 Issue 和 Pull Request!
+Issues and Pull Requests are welcome!

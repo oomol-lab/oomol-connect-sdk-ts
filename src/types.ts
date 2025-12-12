@@ -1,4 +1,4 @@
-// ============ 通用类型 ============
+// ============ Common Types ============
 
 export type TaskStatus = "created" | "pending" | "running" | "completed" | "failed" | "stopped";
 
@@ -17,7 +17,7 @@ export interface NodeInputs {
   inputs: InputValue[];
 }
 
-// ============ Blocks 类型 ============
+// ============ Blocks Types ============
 
 export interface Block {
   package: string;
@@ -25,15 +25,15 @@ export interface Block {
   path: string;
   description?: string;
   inputs?: InputHandle[];
-  blockId: string; // 格式: "package::name"
-  version?: string; // 从 path 中提取的版本号 (如: "0.1.9")
+  blockId: string; // Format: "package::name"
+  version?: string; // Version extracted from path (e.g., "0.1.9")
 }
 
 export interface ListBlocksResponse {
   blocks: Block[];
 }
 
-// ============ Tasks 类型 ============
+// ============ Tasks Types ============
 
 export interface Task {
   id: string;
@@ -76,7 +76,7 @@ export interface GetTaskLogsResponse {
   success: boolean;
 }
 
-// ============ Applets 类型 ============
+// ============ Applets Types ============
 
 export interface AppletData {
   title?: string;
@@ -103,7 +103,7 @@ export interface RunAppletRequest {
   inputValues?: TaskInputValues;
 }
 
-// ============ Packages 类型 ============
+// ============ Packages Types ============
 
 export interface Package {
   name: string;
@@ -151,7 +151,7 @@ export interface GetInstallTaskResponse {
   error?: string;
 }
 
-// ============ 错误类型 ============
+// ============ Error Types ============
 
 export interface ApiErrorResponse {
   message?: string;
@@ -159,19 +159,19 @@ export interface ApiErrorResponse {
   success?: boolean;
 }
 
-// ============ 输入值类型 (灵活支持三种格式) ============
+// ============ Input Value Types (Flexible support for three formats) ============
 
 export type TaskInputValues =
-  | Record<string, unknown>                    // 格式1: { input1: "value1", input2: 123 }
-  | InputValue[]                                // 格式2: [{ handle: "input1", value: "value1" }]
-  | NodeInputs[];                               // 格式3: [{ nodeId: "node1", inputs: [...] }]
+  | Record<string, unknown>                    // Format 1: { input1: "value1", input2: 123 }
+  | InputValue[]                                // Format 2: [{ handle: "input1", value: "value1" }]
+  | NodeInputs[];                               // Format 3: [{ nodeId: "node1", inputs: [...] }]
 
 export interface CreateTaskRequest {
   blockId: string;
   inputValues?: TaskInputValues;
 }
 
-// ============ 轮询配置类型 ============
+// ============ Polling Configuration Types ============
 
 export enum BackoffStrategy {
   Fixed = "fixed",
@@ -179,33 +179,33 @@ export enum BackoffStrategy {
 }
 
 export interface PollingOptions {
-  /** 轮询间隔 (ms), 默认 2000 */
+  /** Polling interval (ms), defaults to 2000 */
   intervalMs?: number;
-  /** 最大等待时间 (ms), 默认无限制 */
+  /** Maximum wait time (ms), defaults to unlimited */
   timeoutMs?: number;
-  /** 最大轮询间隔 (ms), 默认 10000 */
+  /** Maximum polling interval (ms), defaults to 10000 */
   maxIntervalMs?: number;
-  /** 退避策略, 默认 Exponential */
+  /** Backoff strategy, defaults to Exponential */
   backoffStrategy?: BackoffStrategy;
-  /** 退避系数, 默认 1.5 */
+  /** Backoff factor, defaults to 1.5 */
   backoffFactor?: number;
-  /** 进度回调 */
+  /** Progress callback */
   onProgress?: (task: Task) => void;
-  /** 日志回调 */
+  /** Log callback */
   onLog?: (log: TaskLog) => void;
-  /** 取消信号 */
+  /** Cancel signal */
   signal?: AbortSignal;
 }
 
-// ============ 客户端配置 ============
+// ============ Client Configuration ============
 
 export interface ClientOptions {
-  /** API 基础 URL, 默认 /api */
+  /** API base URL, defaults to /api */
   baseUrl?: string;
-  /** API Token (会自动添加到 Authorization 头) */
+  /** API Token (automatically added to Authorization header) */
   apiToken?: string;
-  /** 自定义 fetch 实现 */
+  /** Custom fetch implementation */
   fetch?: typeof fetch;
-  /** 默认请求头 */
+  /** Default headers */
   defaultHeaders?: Record<string, string>;
 }

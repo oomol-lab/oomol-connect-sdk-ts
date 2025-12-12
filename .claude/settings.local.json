@@ -13,7 +13,13 @@
       "Bash(git restore:*)",
       "Bash(git commit:*)",
       "Bash(git tag:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(git log --all --all-match --grep=\"api-7a1b5a5b\")",
+      "Bash(git remote add upstream https://github.com/oomol-lab/oomol-connect-sdk-ts.git)",
+      "Bash(npm run lint:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": []

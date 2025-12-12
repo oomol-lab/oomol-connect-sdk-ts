@@ -2,18 +2,18 @@ import type { OomolConnectClient } from "./client.js";
 import type { ListAppletsResponse, RunAppletRequest, TaskInputValues, InputValue, NodeInputs, PollingOptions, Task, TaskLog } from "./types.js";
 import { ApiError } from "./errors.js";
 
-// Applets 查询服务器的固定地址
+// Fixed server address for Applets queries
 const APPLETS_QUERY_BASE_URL = "https://chat-data.oomol.com";
 
 export class AppletsClient {
   constructor(private client: OomolConnectClient) {}
 
   /**
-   * 列出所有 applets
-   * 注意: 此方法使用固定的查询服务器 (https://chat-data.oomol.com)
+   * List all applets
+   * Note: This method uses a fixed query server (https://chat-data.oomol.com)
    */
   async list(): Promise<ListAppletsResponse> {
-    // 使用固定的查询服务器地址
+    // Use fixed query server address
     const url = `${APPLETS_QUERY_BASE_URL}/rpc/listApplets`;
     const headers: Record<string, string> = {
       ...this.client.getDefaultHeaders(),
@@ -48,7 +48,7 @@ export class AppletsClient {
   }
 
   /**
-   * 运行 applet (预填参数的 block)
+   * Run applet (block with pre-filled parameters)
    */
   async run(
     request: RunAppletRequest,
@@ -59,11 +59,11 @@ export class AppletsClient {
     logs: TaskLog[];
     result?: any;
   }> {
-    // 步骤1: 从 list() 中查找 applet
+    // Step 1: Find applet from list()
     const applets = await this.list();
     const applet = applets.find(a => a.appletId === request.appletId);
 
-    // 步骤2: 如果找不到,抛出错误
+    // Step 2: If not found, throw error
     if (!applet) {
       throw new ApiError(
         `Applet not found: ${request.appletId}`,
@@ -72,17 +72,17 @@ export class AppletsClient {
       );
     }
 
-    // 步骤3: 合并预设参数和用户参数
+    // Step 3: Merge preset parameters with user parameters
     const mergedInputs = this.mergeInputValues(
       applet.data.presetInputs,
       request.inputValues
     );
 
-    // 步骤4: 构造 blockId
+    // Step 4: Construct blockId
     const packageName = this.extractPackageName(applet.data.packageId);
     const blockId = `${packageName}::${applet.data.blockName}`;
 
-    // 步骤5: 调用 tasks.run()
+    // Step 5: Call tasks.run()
     return await this.client.tasks.run({
       blockId,
       inputValues: mergedInputs
@@ -90,26 +90,26 @@ export class AppletsClient {
   }
 
   /**
-   * 合并预设参数和用户参数 (用户参数优先)
+   * Merge preset parameters with user parameters (user parameters take precedence)
    */
   private mergeInputValues(
     presetInputs?: Record<string, unknown>,
     userInputs?: TaskInputValues
   ): TaskInputValues {
-    // 如果没有预设值,直接返回用户输入
+    // If no preset values, return user input directly
     if (!presetInputs || Object.keys(presetInputs).length === 0) {
       return userInputs || {};
     }
 
-    // 如果没有用户输入,返回预设值
+    // If no user input, return preset values
     if (!userInputs) {
       return presetInputs;
     }
 
-    // 将用户输入规范化为对象格式
+    // Normalize user input to object format
     const normalizedUserInputs = this.normalizeToObject(userInputs);
 
-    // 合并: 用户输入覆盖预设值
+    // Merge: user input overrides preset values
     return {
       ...presetInputs,
       ...normalizedUserInputs
@@ -117,15 +117,15 @@ export class AppletsClient {
   }
 
   /**
-   * 将三种 TaskInputValues 格式规范化为对象格式
+   * Normalize the three TaskInputValues formats to object format
    */
   private normalizeToObject(inputValues: TaskInputValues): Record<string, unknown> {
-    // 格式1: 对象格式,直接返回
+    // Format 1: Object format, return directly
     if (!Array.isArray(inputValues)) {
       return inputValues;
     }
 
-    // 格式2: [{ handle: "input1", value: "value1" }]
+    // Format 2: [{ handle: "input1", value: "value1" }]
     if (inputValues.length > 0 && "handle" in inputValues[0]) {
       const result: Record<string, unknown> = {};
       (inputValues as InputValue[]).forEach(item => {
@@ -134,8 +134,8 @@ export class AppletsClient {
       return result;
     }
 
-    // 格式3: [{ nodeId: "node1", inputs: [...] }]
-    // 只支持单节点,取第一个节点的 inputs
+    // Format 3: [{ nodeId: "node1", inputs: [...] }]
+    // Only supports single node, takes the first node's inputs
     const nodeInputs = inputValues as NodeInputs[];
     if (nodeInputs.length > 0) {
       const result: Record<string, unknown> = {};
@@ -149,11 +149,11 @@ export class AppletsClient {
   }
 
   /**
-   * 从 packageId 提取 package name (移除版本号)
+   * Extract package name from packageId (remove version number)
    */
   private extractPackageName(packageId: string): string {
-    // packageId 格式: "json-repair-1.0.1" 或 "json-repair"
-    // 移除 "-x.y.z" 版本号部分
+    // packageId format: "json-repair-1.0.1" or "json-repair"
+    // Remove "-x.y.z" version suffix
     return packageId.replace(/-\d+\.\d+\.\d+$/, '');
   }
 }

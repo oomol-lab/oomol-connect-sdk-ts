@@ -1,35 +1,35 @@
-// 主客户端
+// Main client
 export { OomolConnectClient } from "./client.js";
 
-// 子客户端
+// Sub-clients
 export { BlocksClient } from "./blocks.js";
 export { TasksClient } from "./tasks.js";
 export { PackagesClient } from "./packages.js";
 export { AppletsClient } from "./applets.js";
 
-// 类型
+// Types
 export type {
-  // 通用类型
+  // Common types
   TaskStatus,
   InputHandle,
   InputValue,
   NodeInputs,
-  // Blocks 类型
+  // Blocks types
   Block,
   ListBlocksResponse,
-  // Tasks 类型
+  // Tasks types
   Task,
   ListTasksResponse,
   CreateTaskResponse,
   GetTaskResponse,
   TaskLog,
   GetTaskLogsResponse,
-  // Applets 类型
+  // Applets types
   Applet,
   AppletData,
   ListAppletsResponse,
   RunAppletRequest,
-  // Packages 类型
+  // Packages types
   Package,
   ListPackagesResponse,
   PackageDependency,
@@ -38,21 +38,21 @@ export type {
   InstallPackageResponse,
   ListInstallTasksResponse,
   GetInstallTaskResponse,
-  // 错误类型
+  // Error types
   ApiErrorResponse,
-  // 输入值类型
+  // Input value types
   TaskInputValues,
   CreateTaskRequest,
-  // 轮询配置类型
+  // Polling configuration types
   PollingOptions,
-  // 客户端配置
+  // Client configuration
   ClientOptions,
 } from "./types.js";
 
-// 枚举
+// Enums
 export { BackoffStrategy } from "./types.js";
 
-// 错误类
+// Error classes
 export {
   OomolConnectError,
   ApiError,
@@ -62,5 +62,5 @@ export {
   InstallFailedError,
 } from "./errors.js";
 
-// 工具函数
+// Utility functions
 export { normalizeInputValues, buildUrl } from "./utils.js";

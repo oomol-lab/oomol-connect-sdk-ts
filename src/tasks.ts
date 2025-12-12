@@ -17,14 +17,14 @@ export class TasksClient {
   constructor(private client: OomolConnectClient) {}
 
   /**
-   * 列出所有任务
+   * List all tasks
    */
   async list(): Promise<ListTasksResponse> {
     return this.client.request<ListTasksResponse>("/v1/tasks");
   }
 
   /**
-   * 创建任务 (JSON)
+   * Create task (JSON)
    */
   async create(request: CreateTaskRequest): Promise<CreateTaskResponse> {
     const body: Record<string, unknown> = {
@@ -42,7 +42,7 @@ export class TasksClient {
   }
 
   /**
-   * 创建任务 (multipart/form-data,支持文件上传)
+   * Create task (multipart/form-data, supports file uploads)
    */
   async createWithFiles(
     blockId: string,
@@ -65,14 +65,14 @@ export class TasksClient {
   }
 
   /**
-   * 获取任务详情
+   * Get task details
    */
   async get(taskId: string): Promise<GetTaskResponse> {
     return this.client.request<GetTaskResponse>(`/v1/tasks/${encodeURIComponent(taskId)}`);
   }
 
   /**
-   * 停止任务
+   * Stop task
    */
   async stop(taskId: string): Promise<GetTaskResponse> {
     return this.client.request<GetTaskResponse>(`/v1/tasks/${encodeURIComponent(taskId)}/stop`, {
@@ -81,14 +81,14 @@ export class TasksClient {
   }
 
   /**
-   * 获取任务日志
+   * Get task logs
    */
   async getLogs(taskId: string): Promise<GetTaskLogsResponse> {
     return this.client.request<GetTaskLogsResponse>(`/v1/tasks/${encodeURIComponent(taskId)}/logs`);
   }
 
   /**
-   * 轮询等待任务完成
+   * Poll and wait for task completion
    */
   async waitForCompletion(taskId: string, options: PollingOptions = {}): Promise<Task> {
     const {
@@ -173,7 +173,7 @@ export class TasksClient {
   }
 
   /**
-   * 创建并等待任务完成 (便捷方法)
+   * Create and wait for task completion (convenience method)
    */
   async createAndWait(
     request: CreateTaskRequest,
@@ -185,7 +185,7 @@ export class TasksClient {
   }
 
   /**
-   * 创建带文件上传的任务并等待完成
+   * Create task with file uploads and wait for completion
    */
   async createWithFilesAndWait(
     blockId: string,
@@ -199,8 +199,8 @@ export class TasksClient {
   }
 
   /**
-   * 运行任务并直接获取结果 (最便捷方法)
-   * 创建任务、等待完成、获取日志，一步到位
+   * Run task and get results directly (most convenient method)
+   * Creates task, waits for completion, and gets logs all in one step
    */
   async run(
     request: CreateTaskRequest,
@@ -211,13 +211,13 @@ export class TasksClient {
     logs: GetTaskLogsResponse["logs"];
     result?: any;
   }> {
-    // 创建并等待任务完成
+    // Create and wait for task completion
     const { taskId, task } = await this.createAndWait(request, pollingOptions);
 
-    // 获取任务日志
+    // Get task logs
     const { logs } = await this.getLogs(taskId);
 
-    // 尝试从日志中提取结果
+    // Try to extract result from logs
     const resultLog = logs.find(
       (log) => log.type === "BlockFinished" && log.event?.result
     );
@@ -227,7 +227,7 @@ export class TasksClient {
   }
 
   /**
-   * 运行带文件上传的任务并直接获取结果
+   * Run task with file uploads and get results directly
    */
   async runWithFiles(
     blockId: string,
@@ -240,7 +240,7 @@ export class TasksClient {
     logs: GetTaskLogsResponse["logs"];
     result?: any;
   }> {
-    // 创建并等待任务完成
+    // Create and wait for task completion
     const { taskId, task } = await this.createWithFilesAndWait(
       blockId,
       inputValues,
@@ -248,10 +248,10 @@ export class TasksClient {
       pollingOptions
     );
 
-    // 获取任务日志
+    // Get task logs
     const { logs } = await this.getLogs(taskId);
 
-    // 尝试从日志中提取结果
+    // Try to extract result from logs
     const resultLog = logs.find(
       (log) => log.type === "BlockFinished" && log.event?.result
     );
