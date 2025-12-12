@@ -2,9 +2,15 @@ node_modules/
 dist/
 build/
 .env
+.env.*
 .DS_Store
 .idea/
 .vscode/
 *.log
 coverage/
 package-lock.json
+
+# Test files with sensitive data
+test-*.ts
+!test/*.ts
+**/apiToken.ts
