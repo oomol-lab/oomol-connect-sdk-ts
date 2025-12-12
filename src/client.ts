@@ -4,6 +4,7 @@ import { buildUrl } from "./utils.js";
 import { BlocksClient } from "./blocks.js";
 import { TasksClient } from "./tasks.js";
 import { PackagesClient } from "./packages.js";
+import { AppletsClient } from "./applets.js";
 
 export class OomolConnectClient {
   private readonly baseUrl: string;
@@ -13,6 +14,7 @@ export class OomolConnectClient {
   public readonly blocks: BlocksClient;
   public readonly tasks: TasksClient;
   public readonly packages: PackagesClient;
+  public readonly applets: AppletsClient;
 
   constructor(options: ClientOptions = {}) {
     this.baseUrl = options.baseUrl ?? "/api";
@@ -27,6 +29,7 @@ export class OomolConnectClient {
     this.blocks = new BlocksClient(this);
     this.tasks = new TasksClient(this);
     this.packages = new PackagesClient(this);
+    this.applets = new AppletsClient(this);
   }
 
   async request<T>(path: string, init: RequestInit = {}): Promise<T> {

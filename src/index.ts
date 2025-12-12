@@ -5,6 +5,7 @@ export { OomolConnectClient } from "./client.js";
 export { BlocksClient } from "./blocks.js";
 export { TasksClient } from "./tasks.js";
 export { PackagesClient } from "./packages.js";
+export { AppletsClient } from "./applets.js";
 
 // 类型
 export type {
@@ -23,6 +24,11 @@ export type {
   GetTaskResponse,
   TaskLog,
   GetTaskLogsResponse,
+  // Applets 类型
+  Applet,
+  AppletData,
+  ListAppletsResponse,
+  RunAppletRequest,
   // Packages 类型
   Package,
   ListPackagesResponse,

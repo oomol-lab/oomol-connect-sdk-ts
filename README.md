@@ -73,7 +73,7 @@ const client = new OomolConnectClient({
 
 ## API 模块
 
-SDK 提供了三个主要模块:
+SDK 提供了四个主要模块:
 
 ### 1. Blocks 模块
 
@@ -119,7 +119,74 @@ await client.tasks.stop(taskId);
 const { logs } = await client.tasks.getLogs(taskId);
 ```
 
-### 3. Packages 模块
+### 3. Applets 模块
+
+管理小程序 (applets)。Applet 是预填了参数的 Block,运行 applet 相当于用预设参数运行对应的 block:
+
+```typescript
+// 列出所有 applets
+const applets = await client.applets.list();
+
+// 每个 applet 包含:
+// - appletId: applet 的唯一 ID
+// - userId: 创建者的用户 ID
+// - data: applet 数据
+//   - title/description: 标题和描述
+//   - packageId: 关联的包 ID (如 "json-repair-1.0.1")
+//   - blockName: 关联的 block 名称
+//   - presetInputs: 预设输入参数
+// - createdAt/updatedAt: 时间戳
+
+console.log(applets[0].data.title);        // applet 标题
+console.log(applets[0].data.packageId);    // "json-repair-1.0.1"
+console.log(applets[0].data.blockName);    // "json-repair"
+console.log(applets[0].data.presetInputs); // { content: "...", indent: 2 }
+
+// 运行 applet (使用所有预设参数)
+const { result, taskId } = await client.applets.run({
+  appletId: "84dc8cac-7f91-4bd1-a3b6-6715bf4f81c9"
+});
+console.log("执行结果:", result);
+
+// 运行 applet (覆盖部分预设参数)
+// 用户提供的参数会覆盖预设值,未提供的参数使用预设值
+const { result, taskId } = await client.applets.run({
+  appletId: "84dc8cac-7f91-4bd1-a3b6-6715bf4f81c9",
+  inputValues: {
+    content: "{ \"new\": \"value\" }", // 覆盖预设值
+    indent: 4,                         // 覆盖预设值
+    // preview 字段未提供,使用预设值
+  }
+});
+
+// 运行 applet (带轮询回调)
+const { result, task, logs } = await client.applets.run(
+  {
+    appletId: "84dc8cac-7f91-4bd1-a3b6-6715bf4f81c9",
+    inputValues: { content: "new content" }
+  },
+  {
+    intervalMs: 2000,
+    onProgress: (task) => console.log(`进度: ${task.status}`),
+    onLog: (log) => console.log(`日志:`, log)
+  }
+);
+```
+
+**参数合并规则**:
+
+```typescript
+// 预设参数
+presetInputs = { content: "{ \"a\": \"b\" }", indent: 2, preview: true }
+
+// 用户参数
+inputValues = { content: "new", indent: 4 }
+
+// 合并结果 (用户参数优先)
+mergedInputs = { content: "new", indent: 4, preview: true }
+```
+
+### 4. Packages 模块
 
 管理包安装:
 

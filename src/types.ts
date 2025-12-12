@@ -76,6 +76,33 @@ export interface GetTaskLogsResponse {
   success: boolean;
 }
 
+// ============ Applets 类型 ============
+
+export interface AppletData {
+  title?: string;
+  description?: string;
+  id: string;
+  createdAt: number;
+  packageId: string;
+  blockName: string;
+  presetInputs?: Record<string, unknown>;
+}
+
+export interface Applet {
+  appletId: string;
+  userId: string;
+  data: AppletData;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export type ListAppletsResponse = Applet[];
+
+export interface RunAppletRequest {
+  appletId: string;
+  inputValues?: TaskInputValues;
+}
+
 // ============ Packages 类型 ============
 
 export interface Package {
