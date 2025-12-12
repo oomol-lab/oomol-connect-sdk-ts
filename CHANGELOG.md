@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2025-12-12
+
+### Added
+
+- **Applets 模块**: 新增完整的 Applets 模块,用于管理和运行预填参数的 blocks
+  - 新增 `AppletsClient` 类,提供 `list()` 和 `run()` 方法
+  - 新增类型定义: `Applet`, `AppletData`, `RunAppletRequest`
+  - Applets 查询服务器地址已内置到 SDK (`https://chat-data.oomol.com`),用户只需配置任务执行服务器
+  - 支持参数合并: 用户参数优先,未提供的参数使用预设值
+  - 自动处理 packageId,提取包名并构造 blockId
+
+### Security
+
+- **移除敏感数据**: 从 Git 历史中彻底删除了包含 API token 的测试文件
+- **增强 .gitignore**: 添加规则防止未来泄露敏感数据
+  - 忽略 `test-*.ts` 文件
+  - 忽略 `.env.*` 环境变量文件
+  - 忽略 `**/apiToken.ts` 文件
+
+### Changed
+
+- 优化文档和示例代码
+
 ## [0.2.0] - 2025-12-09
 
 ### Breaking Changes
